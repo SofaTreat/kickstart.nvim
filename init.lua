@@ -103,6 +103,8 @@ vim.keymap.set('n', '<leader>l', '<C-w><C-l>', { desc = "which_key_ignore" })
 vim.keymap.set('n', '<leader>j', '<C-w><C-j>', { desc = "which_key_ignore" })
 vim.keymap.set('n', '<leader>k', '<C-w><C-k>', { desc = "which_key_ignore" })
 
+vim.keymap.set('n', '<leader>sj', ':.cc<CR>', { desc = "which_key_ignore" })
+
 vim.keymap.set("n", "<leader>cw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = 'replace Word in buffer.' })
 vim.keymap.set("n", "<leader>cs", ':set spell<CR>', { desc = 'set spelling mode.' })
 vim.keymap.set("n", "<leader>cj", 'z=', { desc = 'check spelling of a word. (spelling mode needs to be on.)' })
@@ -172,7 +174,7 @@ vim.keymap.set('n', '<leader>tt', function()
     { desc = 'open a [T]erminal.' }
 )
 
-vim.keymap.set('n', '<leader>tf', ':lcd %:h', { desc = 'set the [T]erminal dir to the current file location' })
+vim.keymap.set('n', '<leader>tf', ':lcd %:h <CR>', { desc = 'set the [T]erminal dir to the current file location' })
 vim.keymap.set('n', '<leader>ty', ':wall | vsplit   | terminal<CR> i ./run.ps1<CR><C-\\><C-n>G', { desc = 'open a Terminal right and Run.'})
 vim.keymap.set('n', '<leader>tg', ':wall | bo 15 sp | terminal<CR> i ./run.ps1<CR><C-\\><C-n>G', { desc = 'open a Terminal down and Run.' })
 
@@ -279,15 +281,20 @@ require('lazy').setup {
                 --{ ignore_missing = true, }
             )
             -- Document existing key chains
-            require('which-key').register {
-                ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-                ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-                ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-                ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-                --['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
-                ['<leader>t'] = { name = '[T]erminal', _ = 'which_key_ignore' },
-                --['<leader>n'] = { name = 'Harpoo[n]', _ = 'which_key_ignore' },
+            require('which-key').add{
+                { "<leader>c", group = "[C]ode" },
+                { "<leader>c_", hidden = true },
+                { "<leader>d", group = "[D]ocument" },
+                { "<leader>d_", hidden = true },
+                { "<leader>r", group = "[R]ename" },
+                { "<leader>r_", hidden = true },
+                { "<leader>s", group = "[S]earch" },
+                { "<leader>s_", hidden = true },
+                { "<leader>t", group = "[T]erminal" },
+                { "<leader>t_", hidden = true },
             }
+
+
         end,
     },
     -----------------------------------------------------------------------------------------------
@@ -444,7 +451,7 @@ require('lazy').setup {
 
             -- Shortcut for searching your neovim configuration files
             vim.keymap.set('n', '<leader>si', function()
-                builtin.find_files { cwd = 'c:\\dump\\text\\' }
+                builtin.find_files { cwd = 'c:\\dump\\dump-code\\text\\' }
             end, { desc = '[S]earch [N]eovim files' })
         end,
     },
@@ -509,7 +516,6 @@ require('lazy').setup {
 
             local servers = {
                 clangd = {},
-                tsserver = {},
 
                 glsl_analyzer = {
                     filetypes = { 'glsl', 'fsh', 'vsh', },
