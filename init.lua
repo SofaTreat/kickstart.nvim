@@ -1,5 +1,5 @@
-----------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 --  For more options, you can see `:help option-list`
@@ -33,7 +33,7 @@ vim.opt.clipboard = 'unnamedplus'
 
 -- Enable break indent
 vim.opt.breakindent = true
-vim.opt.breakindentopt = { 'shift:2', 'sbr' }
+vim.opt.breakindentopt = { 'shift:0', 'sbr' }
 vim.opt.linebreak = true
 vim.opt.wrap = true
 
@@ -79,8 +79,8 @@ vim.o.shell = "pwsh.exe"
 
 --vim.cmd(':set syn-iskeyword-=_')
 
-----------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -102,6 +102,13 @@ vim.keymap.set('n', '<leader>h', '<C-w><C-h>', { desc = "which_key_ignore" })
 vim.keymap.set('n', '<leader>l', '<C-w><C-l>', { desc = "which_key_ignore" })
 vim.keymap.set('n', '<leader>j', '<C-w><C-j>', { desc = "which_key_ignore" })
 vim.keymap.set('n', '<leader>k', '<C-w><C-k>', { desc = "which_key_ignore" })
+
+vim.keymap.set('n', '<S-v>',     '<C-v>',  { desc = "which_key_ignore" })
+vim.keymap.set({'n', 'v'}, '<C-i>', '<C-a>', { desc = "increment upwards" })
+vim.keymap.set({'n', 'v'}, '<C-u>', '<C-x>', { desc = "increment downwards" })
+vim.keymap.set('v', '<C-c>', 'y', { desc = "which_key_ignore" })
+vim.keymap.set({'n', 'v'}, '<C-v>', 'P', { desc = "which_key_ignore" })
+vim.keymap.set({'n', 'v'}, 'p', 'P', { desc = "which_key_ignore" })
 
 vim.keymap.set('n', '<leader>sj', ':.cc<CR>', { desc = "which_key_ignore" })
 
@@ -129,9 +136,15 @@ vim.keymap.set('n', '<leader>dj',  ':split<CR>', { desc = 'Split doc down.' })
 vim.keymap.set('n', '<leader>dd',  '<C-w>c', { desc = 'deletes buffer at current split.' })
 vim.keymap.set('n', '.',           ':b#<CR>',    { desc = 'Returns to previous buffer.' })
 
-vim.keymap.set('n', '<BACKSPACE>', '<C-d>zz', { desc = 'half page down.' })
-vim.keymap.set('n', '<ENTER>',     '<C-u>zz', { desc = 'half page up.' })
-vim.keymap.set({ 'n', 'v' }, '<leader><ENTER>', '$', { desc = 'End of line.' })
+vim.keymap.set('n', '<C-j>', 'J', { desc = 'lineup.' })
+
+
+vim.keymap.set('n', 'J', '<C-d>zz', { desc = 'half page down.' })
+--vim.keymap.set('n', '<BACKSPACE>', '<C-d>zz', { desc = 'half page down.' })
+vim.keymap.set('n', 'K', '<C-u>zz', { desc = 'half page up.' })
+--vim.keymap.set('n', '<ENTER>',     '<C-u>zz', { desc = 'half page up.' })
+vim.keymap.set('n', '<BACKSPACE>', '_', { desc = 'Begining of line.' })
+vim.keymap.set({ 'n', 'v' }, '?', '$', { desc = 'End of line.' })
 
 vim.keymap.set('n', '<leader>z', ':ZenMode<CR>',{ desc = 'Zen mode.' })
 
@@ -142,7 +155,7 @@ vim.keymap.set('n', 'qp', 'o<ESC>"qp')
 --yank the macro back up
 vim.keymap.set('n', 'qy', '_"qy$ddk')
 
-vim.keymap.set('n', '<leader>cc', '_o{}<ESC>i<CR><ESC>$i<CR><ESC>ki<tab>', {desc = 'create brackets after below current line'})
+vim.keymap.set('n', '<leader>cc', '_o{}<ESC>i<CR><ESC>$i<CR><ESC>ki<TAB>', {desc = 'create brackets after below current line'})
 
 vim.keymap.set('n', '<leader>w', ':w<CR>', { desc = 'writes the file.' })
 
@@ -153,8 +166,8 @@ vim.keymap.set('n', '<leader>se', "<CMD>Oil<CR>", { desc = 'Opens the file explo
 vim.keymap.set("v", "K", ":m '>-2<CR>gv=gv")
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 
-----------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 --TERMINAL STUFF
 --
 local term_buf = nil
@@ -190,15 +203,15 @@ end,
     { desc = '[E]xits the terminal on the right.' }
 )
 
-----------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 --for lualine to add a clock.
 local function clock_component()
     return vim.fn.strftime("%H:%M")
 end
-----------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 -- [[ Basic Autocommands ]]
 --  See :help lua-guide-autocommands
 
@@ -213,7 +226,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     end,
 })
 
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 -- lua function that holds the cursor position when I close a file
 local group = vim.api.nvim_create_augroup("jump_last_position", { clear = true })
 vim.api.nvim_create_autocmd( "BufReadPost", {
@@ -225,6 +238,7 @@ vim.api.nvim_create_autocmd( "BufReadPost", {
     end,
     group = group,
 })
+
 ----------------------------------------------------------------------------------------------------
 vim.api.nvim_create_autocmd("ColorScheme", {
 	pattern = "*",
@@ -235,8 +249,9 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 		vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
 	end,
 })
-----------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 --
@@ -329,6 +344,53 @@ require('lazy').setup {
     },
     -----------------------------------------------------------------------------------------------
     {
+        'goolord/alpha-nvim',
+        config = function ()
+            require'alpha'.setup(require'alpha.themes.dashboard'.config)
+
+            local dashboard = require("alpha.themes.dashboard")
+            dashboard.section.header.val = {
+                "                                   ",
+                "                                   ",
+                "                                   ",
+                "   ⣴⣶⣤⡤⠦⣤⣀⣤⠆     ⣈⣭⣿⣶⣿⣦⣼⣆          ",
+                "    ⠉⠻⢿⣿⠿⣿⣿⣶⣦⠤⠄⡠⢾⣿⣿⡿⠋⠉⠉⠻⣿⣿⡛⣦       ",
+                "          ⠈⢿⣿⣟⠦ ⣾⣿⣿⣷    ⠻⠿⢿⣿⣧⣄     ",
+                "           ⣸⣿⣿⢧ ⢻⠻⣿⣿⣷⣄⣀⠄⠢⣀⡀⠈⠙⠿⠄    ",
+                "          ⢠⣿⣿⣿⠈    ⣻⣿⣿⣿⣿⣿⣿⣿⣛⣳⣤⣀⣀   ",
+                "   ⢠⣧⣶⣥⡤⢄ ⣸⣿⣿⠘  ⢀⣴⣿⣿⡿⠛⣿⣿⣧⠈⢿⠿⠟⠛⠻⠿⠄  ",
+                "  ⣰⣿⣿⠛⠻⣿⣿⡦⢹⣿⣷   ⢊⣿⣿⡏  ⢸⣿⣿⡇ ⢀⣠⣄⣾⠄   ",
+                " ⣠⣿⠿⠛ ⢀⣿⣿⣷⠘⢿⣿⣦⡀ ⢸⢿⣿⣿⣄ ⣸⣿⣿⡇⣪⣿⡿⠿⣿⣷⡄  ",
+                " ⠙⠃   ⣼⣿⡟  ⠈⠻⣿⣿⣦⣌⡇⠻⣿⣿⣷⣿⣿⣿ ⣿⣿⡇ ⠛⠻⢷⣄ ",
+                "      ⢻⣿⣿⣄   ⠈⠻⣿⣿⣿⣷⣿⣿⣿⣿⣿⡟ ⠫⢿⣿⡆     ",
+                "       ⠻⣿⣿⣿⣿⣶⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⡟⢀⣀⣤⣾⡿⠃     ",
+                "                                   ",
+             }
+
+            dashboard.section.buttons.val = {
+                dashboard.button("f", "  Find file", ":Telescope find_files <CR>"),
+                dashboard.button("e", "  New file", ":ene <BAR> startinsert <CR>"),
+                dashboard.button("r", "  Recently used files", ":Telescope oldfiles <CR>"),
+                dashboard.button("t", "  Find text", ":Telescope live_grep <CR>"),
+                dashboard.button("c", "  Configuration", ":e ~/.config/nvim/init.vim<CR>"),
+                dashboard.button("q", "  Quit Neovim", ":qa<CR>"),
+            }
+
+            local function footer()
+                return "Space Ghost: Coast to Coast"
+            end
+
+            dashboard.section.footer.val = footer()
+
+            dashboard.section.footer.opts.hl = "Type"
+            dashboard.section.header.opts.hl = "Include"
+            dashboard.section.buttons.opts.hl = "Keyword"
+
+            dashboard.opts.opts.noautocmd = true
+        end
+    },
+    -----------------------------------------------------------------------------------------------
+    {
         'nvim-telescope/telescope.nvim',
         -- Fuzzy Finder (files, lsp, etc)
         event = 'VeryLazy',
@@ -352,9 +414,7 @@ require('lazy').setup {
             },
 
             { 'nvim-telescope/telescope-ui-select.nvim' },
-
             { 'nvim-tree/nvim-web-devicons' },
-
             { 'debugloop/telescope-undo.nvim' },
         },
 
@@ -383,47 +443,62 @@ require('lazy').setup {
 
             -- See `:help telescope.builtin`
             local builtin = require 'telescope.builtin'
-            vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
-            vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
+            vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp'    })
+            vim.keymap.set('n', '<leader>sk', builtin.keymaps,   { desc = '[S]earch [K]eymaps' })
+            vim.keymap.set('n', '<leader>so', builtin.lsp_document_symbols ,   { desc = '[S]earch lsp ref' })
+            vim.keymap.set('n', '<leader>sL', builtin.lsp_dynamic_workspace_symbols ,   { desc = '[S]earch lsp' })
+            vim.keymap.set('n', '<leader>sl', 'yiw :Telescope lsp_dynamic_workspace_symbols default_text=<c-r>0<cr>',   { desc = '[S]earch lsp for cword' })
 
-            --vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-            --edited to exclude certain file types.
-            vim.keymap.set('n', '<leader>sf',
-                function()
-                    require("telescope.builtin").find_files({
-                        file_ignore_patterns = {
-                            ".*yy$",
-                            ".*png$",
-                            ".*psd$",
-                            ".*wav$",
-                            ".*jpg$",
-                            ".*atlas$",
-                            ".*mp3$",
-                            ".*clip$",
-                        },
-                        hidden = true,
+            local _file_ignore = {
+                ".*yy$",
+                ".*yyp$",
+                ".*resource_order$",
+                ".*png$",
+                ".*psd$",
+                ".*wav$",
+                ".*jpg$",
+                ".*atlas$",
+                ".*mp3$",
+                ".*clip$",
+            }
+
+            --files
+            vim.keymap.set('n', '<leader>sf', function()
+                    builtin.find_files({
+                        file_ignore_patterns = _file_ignore,
+                        previewer = false,
                     })
                 end,
                 { desc = '[S]earch [F]iles' }
             )
 
-            vim.keymap.set('n', '<leader>ss',
-                function()
-                    local word = vim.fn.expand("<cword>")
-                    builtin.grep_string({ search = word })
+            --live grep
+            vim.keymap.set('n', '<leader>sg', function()
+                    builtin.live_grep({
+                        file_ignore_patterns = _file_ignore,
+                    })
                 end,
-            { desc = '[S]earch cword'})
+                { desc = '[S]earch by [G]rep' }
+            )
 
-            vim.keymap.set('n', '<leader>st', builtin.builtin, { desc = '[S]earch [T]elescope' })
-            vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-            vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
-            vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
-            vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
-            vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
+            --search word
+            vim.keymap.set('n', '<leader>ss', function()
+                    builtin.grep_string({
+                        file_ignore_patterns = _file_ignore,
+                        { search = word },
+                        hidden = true,
+                    })
+                end,
+                { desc = '[S]earch current [W]ord' }
+            )
 
-            vim.keymap.set('n', '<leader>b', builtin.buffers, { desc = '[ ] [S]earch existing buffers' })
+            vim.keymap.set('n', '<leader>st', builtin.builtin,     { desc = '[S]earch [T]elescope'                   })
+            vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics'                 })
+            vim.keymap.set('n', '<leader>sr', builtin.resume,      { desc = '[S]earch [R]esume'                      })
+            vim.keymap.set('n', '<leader>s.', builtin.oldfiles,    { desc = '[S]earch Recent Files ("." for repeat)' })
+            vim.keymap.set('n', '<leader>b',  builtin.buffers,     { desc = '[ ] [S]earch existing buffers'          })
 
-           vim.keymap.set('n', '<leader>/',
+            vim.keymap.set('n', '<leader>/',
                 function()
                     builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
                         winblend = 10,
@@ -451,8 +526,13 @@ require('lazy').setup {
 
             -- Shortcut for searching your neovim configuration files
             vim.keymap.set('n', '<leader>si', function()
-                builtin.find_files { cwd = 'c:\\dump\\dump-code\\text\\' }
-            end, { desc = '[S]earch [N]eovim files' })
+                builtin.find_files({
+                    cwd = 'c:\\dump\\dump-code\\text\\',
+                    winblend = 10,
+                    previewer = false,
+                })
+            end, { desc = '[S]earch [T]ext files' })
+
         end,
     },
     -----------------------------------------------------------------------------------------------
@@ -484,7 +564,7 @@ require('lazy').setup {
                     map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
                     map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
                     map('<leader>dS', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[D]ocuments [S]ymbols')
-                    map('K', vim.lsp.buf.hover, 'Hover Documentation')
+                    map('<C-k>', vim.lsp.buf.hover, 'Hover Documentation')
                     map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
                     -- Rename the variable under your cursor
@@ -518,7 +598,7 @@ require('lazy').setup {
                 clangd = {},
 
                 glsl_analyzer = {
-                    filetypes = { 'glsl', 'fsh', 'vsh', },
+                    filetypes = { 'glsl', 'fsh', 'vsh', 'vsharp', 'fsharp'},
                 },
 
                 lua_ls = {
@@ -610,7 +690,7 @@ require('lazy').setup {
 
                     ['<C-j>'] = cmp.mapping.select_next_item(),
                     ['<C-k>'] = cmp.mapping.select_prev_item(),
-                    ['<C-y>'] = cmp.mapping(
+                    ['<TAB>'] = cmp.mapping(
                         cmp.mapping.confirm { 
                             behavior = cmp.ConfirmBehavior.Insert,
                             select = true 
@@ -619,7 +699,7 @@ require('lazy').setup {
                     ),
 
                     -- Manually trigger a completion from nvim-cmp.
-                    ['<C-Space>'] = cmp.mapping.complete {},
+                    ['<C-y>'] = cmp.mapping.complete {},
 
                     -- <c-l> will move you to the right of each of the expansion locations.
                     -- <c-h> is similar, except moving you backwards.
@@ -936,8 +1016,8 @@ require('lazy').setup {
     },
     -----------------------------------------------------------------------------------------------
 }
-----------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 --trying to get the gml lsp to work
 --
 vim.lsp.set_log_level("Off")
@@ -947,37 +1027,11 @@ vim.filetype.add({ extension = { gml = 'gml' }, filename = { ['.gml'] = 'gml' }}
 vim.filetype.add({ extension = { fsh = 'fsh' }, filename = { ['.fsh'] = 'fsh' }})
 vim.filetype.add({ extension = { vsh = 'vsh' }, filename = { ['.vsh'] = 'vsh' }})
 
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 local ft = require('Comment.ft')
 ft({'gml'}, ft.get('c'))
 
-vim.api.nvim_create_autocmd("filetype", {
-    pattern = "gml",
-    callback = function()
-        vim.lsp.start({
-            name = "gml-lsp",
-            cmd = {'c:\\program files\\gamemaker studio 2-beta\\gamemakerlanguageserver.exe'},
-            autostart = true,
-            filetypes = { 'gml', '.gml' },
-            init_options = {
-                runtimeDirectory = "C:\\ProgramData/GameMakerStudio2-Beta/Cache/runtimes\\runtime-2024.400.0.605",
-                runtimeVersion = "2024.400.0.605",
-                platforms = { "windows" },
-                languagePacks = {
-                    "C:\\Program Files\\GameMaker Studio 2-Beta\\Plugins\\GMBaseIDELanguages\\Languages\\English\\english.csv",
-                },
-                language = "english",
-            },
-
-            root_dir = vim.fs.dirname(vim.fs.find({"forgotten_game.yyp"}, { upward = true })[1]),
-        })
-
-    end,
-})
-
-
---[[
 local lspconfig = require 'lspconfig'
 local configs = require 'lspconfig.configs'
 local util = require 'lspconfig.util'
@@ -985,26 +1039,29 @@ local util = require 'lspconfig.util'
 if not configs.gml_lsp then
     configs.gml_lsp = {
         default_config = {
-            --cmd = { 'C:\\dump\\gml_lsp\\GameMakerLanguageServer.exe', "--stdio" },
-            cmd = {'C:\\Program Files\\GameMaker Studio 2-Beta\\GameMakerLanguageServer.exe', '--stdio'},
+            cmd = {'C:\\Program Files\\GameMaker\\GameMakerLanguageServer.exe'},
             root_dir = util.root_pattern("*.yyp"),
-            --root_dir = vim.fs.dirname(vim.fs.find({"forgotten_game.yyp"}, { upward = true })[1]),
-            --root_dir = vim.fs.dirname('w:\\'),
             autostart = true,
-            filetypes = { 'gml' },
+            filetypes = { 'gml', '.gml' },
             init_options = {
-                runtimeVersion = "2024.400.0.562",
+                runtimeDirectory = "C:\\ProgramData\\GameMakerStudio2\\Cache\\runtimes\\runtime-2024.11.0.226",
+                runtimeVersion = "2024.11.0.226",
                 platforms = {"Windows"},
                 languagePacks = {
-                    "C:\\Program Files\\GameMaker Studio 2-Beta\\Plugins\\GMBaseIDELanguages\\Languages\\English\\english.csv",
+                    "C:\\Program Files\\GameMaker\\Plugins\\english\\english.csv",
                 },
                 language = "English",
+                prefabLibraryPath = "C:\\ProgramData/GameMakerStudio2/Prefabs",
             },
         },
     }
 end
-lspconfig.gml_lsp.setup {}
---require'lspconfig'.gml_client.setup{}
---]]
+
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+lspconfig.gml_lsp.setup {
+    capabilities = capabilities
+}
+
+
 ---------------------------------------------------------------------------------------------------
 
