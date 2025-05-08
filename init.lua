@@ -77,6 +77,13 @@ vim.opt.hlsearch = true
 --setting the new powershell as the default terminal that opens up.
 vim.o.shell = "pwsh.exe"
 
+--I dont really know what this stuff does?
+vim.o.shellcmdflag = "-NoLogo -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;$PSStyle.Formatting.Error = '';$PSStyle.Formatting.ErrorAccent       = '';$PSStyle.Formatting.Warning = '';$PSStyle.OutputRendering = 'PlainText';"
+vim.o.shellredir  = "2>&1 | Out-File -Encoding utf8 %s; exit $LastExitCode"
+vim.o.shellpipe   = "2>&1 | Out-File -Encoding utf8 %s; exit $LastExitCode"
+vim.o.shellquote  = ""
+vim.o.shellxquote = ""
+
 --vim.cmd(':set syn-iskeyword-=_')
 
 ---------------------------------------------------------------------------------------------------
@@ -103,9 +110,18 @@ vim.keymap.set('n', '<leader>l', '<C-w><C-l>', { desc = "which_key_ignore" })
 vim.keymap.set('n', '<leader>j', '<C-w><C-j>', { desc = "which_key_ignore" })
 vim.keymap.set('n', '<leader>k', '<C-w><C-k>', { desc = "which_key_ignore" })
 
+--better line select
 vim.keymap.set('n', '<S-v>',     '<C-v>',  { desc = "which_key_ignore" })
-vim.keymap.set({'n', 'v'}, '<C-i>', '<C-a>', { desc = "increment upwards" })
-vim.keymap.set({'n', 'v'}, '<C-u>', '<C-x>', { desc = "increment downwards" })
+
+--increment upwards 
+vim.keymap.set('n', '<C-i>', '<C-a>')
+vim.keymap.set('v', '<C-i>', '<C-a>gv')
+
+--increment downwards 
+vim.keymap.set('n', '<C-u>', '<C-x>')
+vim.keymap.set('v', '<C-u>', '<C-x>gv')
+
+--fixing copy and paste
 vim.keymap.set('v', '<C-c>', 'y', { desc = "which_key_ignore" })
 vim.keymap.set({'n', 'v'}, '<C-v>', 'P', { desc = "which_key_ignore" })
 vim.keymap.set({'n', 'v'}, 'p', 'P', { desc = "which_key_ignore" })
@@ -121,8 +137,8 @@ vim.keymap.set("n", "<leader>cg", "g<C-g>", { desc = 'gets the word count.'})
 
 vim.keymap.set("n", "cv", "ct_", { desc = 'cut to next underscore.'})
 vim.keymap.set("n", "cV", "lcT_", { desc = 'cut to last underscore.'})
+vim.keymap.set("n", "cb", "f,a<CR><ESC>", { desc = 'Jump to comma and drop the line.'})
 
-vim.keymap.set("n", "L", "vg_",    { desc = "Select to end of line" })
 
 vim.keymap.set({'n', 'v'}, 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true })
 vim.keymap.set({'n', 'v'}, 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true })
@@ -136,15 +152,30 @@ vim.keymap.set('n', '<leader>dj',  ':split<CR>', { desc = 'Split doc down.' })
 vim.keymap.set('n', '<leader>dd',  '<C-w>c', { desc = 'deletes buffer at current split.' })
 vim.keymap.set('n', '.',           ':b#<CR>',    { desc = 'Returns to previous buffer.' })
 
+--copy and pastes split
+vim.keymap.set('n', '<leader>dy',function()
+        local _current_buff = vim.api.nvim_get_current_buf()
+        vim.cmd('wincmd l')
+        if ( _current_buff ~= vim.api.nvim_get_current_buf()) then
+            vim.api.nvim_set_current_buf(_current_buff)
+        else
+            vim.cmd('wincmd h')
+            if ( _current_buff ~= vim.api.nvim_get_current_buf()) then
+                vim.api.nvim_set_current_buf(_current_buff)
+            end
+        end
+    end,
+    { desc = 'paste buf to other split' }
+)
+
+
 vim.keymap.set('n', '<C-j>', 'J', { desc = 'lineup.' })
 
+vim.keymap.set({ 'n', 'v' }, 'J', '<C-d>zz', { desc = 'half page down.' })
+vim.keymap.set({ 'n', 'v' }, 'K', '<C-u>zz', { desc = 'half page up.' })
 
-vim.keymap.set('n', 'J', '<C-d>zz', { desc = 'half page down.' })
---vim.keymap.set('n', '<BACKSPACE>', '<C-d>zz', { desc = 'half page down.' })
-vim.keymap.set('n', 'K', '<C-u>zz', { desc = 'half page up.' })
---vim.keymap.set('n', '<ENTER>',     '<C-u>zz', { desc = 'half page up.' })
-vim.keymap.set('n', '<BACKSPACE>', '_', { desc = 'Begining of line.' })
-vim.keymap.set({ 'n', 'v' }, '?', '$', { desc = 'End of line.' })
+vim.keymap.set({ 'n', 'v' }, '<BACKSPACE>', '_', { desc = 'Begining of line.' })
+vim.keymap.set({ 'n', 'v' }, ';', '$', { desc = 'End of line.' })
 
 vim.keymap.set('n', '<leader>z', ':ZenMode<CR>',{ desc = 'Zen mode.' })
 
@@ -155,6 +186,9 @@ vim.keymap.set('n', 'qp', 'o<ESC>"qp')
 --yank the macro back up
 vim.keymap.set('n', 'qy', '_"qy$ddk')
 
+
+vim.keymap.set('v', ',', 'yotrace(" <ESC>pa : ", <ESC>pa);<ESC>',{desc = 'trace a selection'} )
+
 vim.keymap.set('n', '<leader>cc', '_o{}<ESC>i<CR><ESC>$i<CR><ESC>ki<TAB>', {desc = 'create brackets after below current line'})
 
 vim.keymap.set('n', '<leader>w', ':w<CR>', { desc = 'writes the file.' })
@@ -163,8 +197,8 @@ vim.keymap.set('n', '<leader>se', "<CMD>Oil<CR>", { desc = 'Opens the file explo
 --vim.keymap.set('n', '<leader>se', vim.cmd.Ex, { desc = 'Opens the file explorer.' })
 
 --moving lines up and down when in visual mode.
-vim.keymap.set("v", "K", ":m '>-2<CR>gv=gv")
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+--vim.keymap.set("v", "K", ":m '>-2<CR>gv=gv")
+--vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
@@ -240,6 +274,7 @@ vim.api.nvim_create_autocmd( "BufReadPost", {
 })
 
 ----------------------------------------------------------------------------------------------------
+
 vim.api.nvim_create_autocmd("ColorScheme", {
 	pattern = "*",
 	callback = function()
@@ -308,8 +343,6 @@ require('lazy').setup {
                 { "<leader>t", group = "[T]erminal" },
                 { "<leader>t_", hidden = true },
             }
-
-
         end,
     },
     -----------------------------------------------------------------------------------------------
@@ -327,6 +360,21 @@ require('lazy').setup {
             })
         end
     },
+    -----------------------------------------------------------------------------------------------
+    -- this is throwing up some wierd errors at startup, Im not sure Im keeping codeium so we will see how we do.
+    --[[ --
+    {
+        'Exafunction/codeium.vim',
+        config = function ()
+            codeium_enabled = false,
+            -- Change '<C-g>' here to any keycode you like.
+            vim.keymap.set('i', '<c-f>', function () return vim.fn['codeium#Accept']() end, { expr = true, silent = true })
+            vim.keymap.set('i', '<c-;>', function() return vim.fn['codeium#CycleCompletions'](1) end, { expr = true, silent = true })
+            vim.keymap.set('i', '<c-,>', function() return vim.fn['codeium#CycleCompletions'](-1) end, { expr = true, silent = true })
+            vim.keymap.set('i', '<c-x>', function() return vim.fn['codeium#Clear']() end, { expr = true, silent = true })
+        end
+    },
+ ]]
     -----------------------------------------------------------------------------------------------
     {
         "folke/flash.nvim",
@@ -395,24 +443,9 @@ require('lazy').setup {
         -- Fuzzy Finder (files, lsp, etc)
         event = 'VeryLazy',
         branch = '0.1.x',
+
         dependencies = {
-
             { 'nvim-lua/plenary.nvim' },
-
-            { -- If encountering errors, see telescope-fzf-native README for install instructions
-                'nvim-telescope/telescope-fzf-native.nvim',
-
-                -- `build` is used to run some command when the plugin is installed/updated.
-                -- This is only run then, not every time Neovim starts up.
-                build = 'make',
-
-                -- `cond` is a condition used to determine whether this plugin should be
-                -- installed and loaded.
-                cond = function()
-                    return vim.fn.executable 'make' == 1
-                end,
-            },
-
             { 'nvim-telescope/telescope-ui-select.nvim' },
             { 'nvim-tree/nvim-web-devicons' },
             { 'debugloop/telescope-undo.nvim' },
@@ -438,8 +471,7 @@ require('lazy').setup {
             vim.keymap.set("n", "<leader>u", "<cmd>Telescope undo<cr>", { desc = "undo-tree."})
 
             -- Enable telescope extensions, if they are installed
-            pcall(require('telescope').load_extension, 'fzf')
-            pcall(require('telescope').load_extension, 'ui-select')
+            require('telescope').load_extension('ui-select')
 
             -- See `:help telescope.builtin`
             local builtin = require 'telescope.builtin'
@@ -450,16 +482,16 @@ require('lazy').setup {
             vim.keymap.set('n', '<leader>sl', 'yiw :Telescope lsp_dynamic_workspace_symbols default_text=<c-r>0<cr>',   { desc = '[S]earch lsp for cword' })
 
             local _file_ignore = {
-                ".*yy$",
-                ".*yyp$",
-                ".*resource_order$",
-                ".*png$",
-                ".*psd$",
-                ".*wav$",
-                ".*jpg$",
-                ".*atlas$",
-                ".*mp3$",
-                ".*clip$",
+                "%.yy",
+                "%.yyp",
+                "%.resource_order",
+                "%.png",
+                "%.psd",
+                "%.wav",
+                "%.jpg",
+                "%.atlas",
+                "%.mp3",
+                "%.clip",
             }
 
             --files
@@ -568,7 +600,7 @@ require('lazy').setup {
                     map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
                     -- Rename the variable under your cursor
-                    --  Most Language Servers support renaming across files, etc.
+                    -- Most Language Servers support renaming across files, etc.
                     map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
 
                     -- Execute a code action, usually your cursor needs to be on top of an error
@@ -621,11 +653,30 @@ require('lazy').setup {
                 },
             }
 
+            --adding a border to <c-k>
+            local border = {
+                {"╭", "FloatBorder"},
+                {"─", "FloatBorder"},
+                {"╮", "FloatBorder"},
+                {"│", "FloatBorder"},
+                {"╯", "FloatBorder"},
+                {"─", "FloatBorder"},
+                {"╰", "FloatBorder"},
+                {"│", "FloatBorder"},
+            }
+
+            local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+            function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+                opts = opts or {}
+                opts.border = opts.border or border
+                return orig_util_open_floating_preview(contents, syntax, opts, ...)
+            end
+
             --  You can press `g?` for help in this menu
             require('mason').setup()
 
             -- You can add other tools here that you want Mason to install
-            -- fo you, so that they are available from within Neovim.
+            -- of you, so that they are available from within Neovim.
             local ensure_installed = vim.tbl_keys(servers or {})
             vim.list_extend(ensure_installed, {
                 'stylua', -- Used to format lua code
@@ -646,6 +697,15 @@ require('lazy').setup {
                     end,
                 },
             }
+        end,
+    },
+    -----------------------------------------------------------------------------------------------
+    {
+        "FabijanZulj/blame.nvim",
+        lazy = false,
+        config = function()
+            require('blame').setup {}
+            vim.keymap.set('n', '<leader>db',  ':BlameToggle<CR>', { desc = 'Toggles git blame.' })
         end,
     },
     -----------------------------------------------------------------------------------------------
@@ -678,11 +738,16 @@ require('lazy').setup {
             luasnip.config.setup {}
 
             cmp.setup {
+
+                --keeps the drop down menu small.
+                performance = { max_view_entries = 2, },
+
                 snippet = {
                     expand = function(args)
                         luasnip.lsp_expand(args.body)
                     end,
                 },
+
                 completion = { completeopt = 'menu,menuone,noinsert' },
 
                 -- No, but seriously. Please read `:help ins-completion`, it is really good!
@@ -719,6 +784,7 @@ require('lazy').setup {
                     { name = 'luasnip' },
                     { name = 'path' },
                     { name = 'buffer' },
+                    { name = 'codeium' },
                 },
             }
         end,
@@ -774,6 +840,18 @@ require('lazy').setup {
             -- Toggle previous & next buffers stored within Harpoon list
             --vim.keymap.set("n", "<leader>np", function() harpoon:list():prev() end)
             --vim.keymap.set("n", "<leader>nn", function() harpoon:list():next() end)
+        end,
+    },
+    -----------------------------------------------------------------------------------------------
+    {
+        "metalelf0/black-metal-theme-neovim",
+        lazy = false,
+        priority = 1000,
+        config = function()
+            require("black-metal").setup({
+                -- optional configuration here
+            })
+            --require("black-metal").load()
         end,
     },
     -----------------------------------------------------------------------------------------------
@@ -841,7 +919,11 @@ require('lazy').setup {
     { "folke/zen-mode.nvim", opts = { window = {width = 95,} } },
     -----------------------------------------------------------------------------------------------
     -- Highlight todo, notes, etc in comments
-    { 'folke/todo-comments.nvim', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+    { 
+        'folke/todo-comments.nvim',
+        dependencies = { 'nvim-lua/plenary.nvim' },
+        opts = { signs = false }
+    },
     -----------------------------------------------------------------------------------------------
     {
         'echasnovski/mini.nvim',
@@ -925,13 +1007,13 @@ require('lazy').setup {
         'nvim-treesitter/nvim-treesitter-context',
         config = function()
             require'treesitter-context'.setup{
-                enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+                enable = true,
                 max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
-                min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+                min_window_height = 0, --  Values <= 0 mean no limit.
                 line_numbers = true,
                 multiline_threshold = 1, -- Maximum number of lines to show for a single context
-                trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
-                mode = 'cursor',  -- Line used to calculate context. Choices: 'cursor', 'topline'
+                trim_scope = 'outer', -- Choices: 'inner', 'outer'
+                mode = 'topline',  -- Line used to calculate context. Choices: 'cursor', 'topline'
                 -- Separator between context and content. Should be a single character string, like '-'.
                 -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
                 separator = nil,
@@ -972,6 +1054,27 @@ require('lazy').setup {
                     ["gx"] = "actions.open_external",
                     ["g."] = "actions.toggle_hidden",
                     ["g\\"] = "actions.toggle_trash",
+                },
+                view_options = {
+                    -- Show files and directories that start with "."
+                    show_hidden = true,
+                    -- This function defines what is considered a "hidden" file
+                    is_hidden_file = function(name, bufnr)
+                        return vim.startswith(name, '.')
+                    end,
+                    -- This function defines what will never be shown, even when `show_hidden` is set
+                    is_always_hidden = function(name, bufnr)
+                        return false
+                    end,
+                    -- Sort file names in a more intuitive order for humans. Is less performant,
+                    -- so you may want to set to false if you work with large directories.
+                    natural_order = false,
+                    sort = {
+                        -- sort order can be "asc" or "desc"
+                        -- see :help oil-columns to see which columns are sortable
+                        { 'type', 'asc' },
+                        { 'name', 'asc' },
+                    },
                 },
             })
         end
@@ -1062,6 +1165,6 @@ lspconfig.gml_lsp.setup {
     capabilities = capabilities
 }
 
-
+---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
