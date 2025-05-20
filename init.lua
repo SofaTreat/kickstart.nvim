@@ -139,6 +139,7 @@ vim.keymap.set("n", "cv", "ct_", { desc = 'cut to next underscore.'})
 vim.keymap.set("n", "cV", "lcT_", { desc = 'cut to last underscore.'})
 vim.keymap.set("n", "cb", "f,a<CR><ESC>", { desc = 'Jump to comma and drop the line.'})
 
+vim.keymap.set("n", "YY", "va{Vy")
 
 vim.keymap.set({'n', 'v'}, 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true })
 vim.keymap.set({'n', 'v'}, 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true })
@@ -150,7 +151,9 @@ vim.keymap.set('n', '<leader>a', 'ggVG',{ desc = 'Select all.' })
 vim.keymap.set('n', '<leader>dl',  ':vsplit<CR>',{ desc = 'vSplit doc right.' })
 vim.keymap.set('n', '<leader>dj',  ':split<CR>', { desc = 'Split doc down.' })
 vim.keymap.set('n', '<leader>dd',  '<C-w>c', { desc = 'deletes buffer at current split.' })
-vim.keymap.set('n', '.',           ':b#<CR>',    { desc = 'Returns to previous buffer.' })
+
+vim.keymap.set('n', '?', '.', { desc = 'repeat last command set.' })
+vim.keymap.set('n', '.', ':b#<CR>',    { desc = 'Returns to previous buffer.' })
 
 --copy and pastes split
 vim.keymap.set('n', '<leader>dy',function()
@@ -1147,8 +1150,8 @@ if not configs.gml_lsp then
             autostart = true,
             filetypes = { 'gml', '.gml' },
             init_options = {
-                runtimeDirectory = "C:\\ProgramData\\GameMakerStudio2\\Cache\\runtimes\\runtime-2024.11.0.226",
-                runtimeVersion = "2024.11.0.226",
+                runtimeDirectory = "C:\\ProgramData\\GameMakerStudio2\\Cache\\runtimes\\runtime-2024.13.1.242",
+                runtimeVersion = "2024.13.1.242",
                 platforms = {"Windows"},
                 languagePacks = {
                     "C:\\Program Files\\GameMaker\\Plugins\\english\\english.csv",
